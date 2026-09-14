@@ -1,0 +1,62 @@
+# CMake build directories
+build/
+**/build/
+Build/
+**/Build/
+Debug/
+**/Debug/
+Release/
+**/Release/
+
+# CMake generated files (for in-source or custom builds)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+compile_commands.json
+install_manifest.txt
+
+# Ninja generated files
+.ninja_deps
+.ninja_log
+build.ninja
+rules.ninja
+
+# Embedded build artifacts
+*.elf
+*.axf
+*.bin
+*.hex
+*.map
+*.lst
+*.d
+*.o
+*.obj
+*.a
+*.lib
+*.su
+*.cyclo
+*.srec
+*.siz
+
+# IDE and editor temporary files
+.vscode/
+.idea/
+.project
+.cproject
+.settings/
+*.code-workspace
+*.launch
+*.swp
+*.swo
+*~
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# The following project inputs are intentionally tracked:
+#   *.ioc, CMakeLists.txt, CMakePresets.json
+#   cmake/, Core/, Drivers/, startup_*.s, *.ld
+#   build.sh, flash.sh
