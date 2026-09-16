@@ -4,7 +4,7 @@ STM32 NUCLEO-F401RE を使った学習用サンプル集です。
 
 各サンプルは STM32CubeMX で初期設定とコード生成を行い、CMake / Ninja / Arm GNU Toolchain でビルドします。書き込みには OpenOCD、シリアル通信の確認には minicom を使用します。
 
-現在は、USART2 をポーリング方式で扱うエコーバックサンプル `uart00_polling` を収録しています。
+現在は、USART2のポーリング受信と割り込み受信を比較できる2つのエコーバックサンプルを収録しています。
 
 ## 開発環境
 
@@ -32,17 +32,26 @@ minicom --version
 .
 ├── README.md
 ├── .gitignore
-└── uart00_polling/
-    ├── Core/                         # アプリケーションおよびCubeMX生成コード
-    ├── Drivers/                      # STM32 HAL/CMSISドライバ
-    ├── cmake/                        # CMakeツールチェーン設定
+├── uart00_polling/                   # USART2ポーリング受信
+│   ├── README.md
+│   ├── Core/
+│   ├── Drivers/
+│   ├── cmake/
+│   ├── CMakeLists.txt
+│   ├── CMakePresets.json
+│   ├── uart00_polling.ioc
+│   ├── build.sh
+│   └── flash.sh
+└── uart01_irq/                       # USART2割り込み受信
+    ├── README.md
+    ├── Core/
+    ├── Drivers/
+    ├── cmake/
     ├── CMakeLists.txt
     ├── CMakePresets.json
-    ├── *.ioc                         # STM32CubeMXプロジェクト
-    ├── startup_*.s                   # スタートアップコード
-    ├── *.ld                          # リンカースクリプト
-    ├── build.sh                      # ビルド用スクリプト
-    └── flash.sh                      # Flash書き込み用スクリプト
+    ├── uart01_irq.ioc
+    ├── build.sh
+    └── flash.sh
 ```
 
 `build/Debug/` などのビルド生成物は Git の追跡対象外です。
@@ -53,13 +62,21 @@ NUCLEO-F401RE の ST-LINK Virtual COM Port に接続された USART2 を使用�
 
 PC から受信したデータを STM32 がポーリングで読み取り、同じデータを USART2 へ返します。UART の基本動作と、HAL を使った送受信処理を確認するための最初のサンプルです。
 
+詳しい処理の流れは[`uart00_polling/README.md`](uart00_polling/README.md)を参照してください。
+
+## uart01_irq
+
+USART2で1バイト受信すると割り込みが発生し、受信完了コールバックで同じ1バイトを返します。受信待ちの間もメインループは動作し、オンボードLED（LD2）が点滅します。
+
+詳しい割り込みの流れは[`uart01_irq/README.md`](uart01_irq/README.md)を参照してください。
+
 ## ビルド
 
-`uart00_polling` ディレクトリへ移動し、ビルドスクリプトを実行します。
+使用するプロジェクトのディレクトリへ移動し、ビルドスクリプトを実行します。以下は割り込み版の例です。
 
 ```bash
-cd uart00_polling
-./build.sh
+cd uart01_irq
+./build.sh all
 ```
 
 スクリプトは CMake Preset を使用して構成とビルドを行います。
@@ -76,10 +93,10 @@ cmake --build --preset Debug
 NUCLEO-F401RE を USB で接続してから、次を実行します。
 
 ```bash
-./flash.sh
+./build.sh flash
 ```
 
-`flash.sh` は OpenOCD とオンボード ST-LINK を使用して、ビルド済みファームウェアをマイコンへ書き込みます。書き込み前に `./build.sh` が正常に完了していることを確認してください。
+ビルドスクリプトはOpenOCDとオンボードST-LINKを使用して、ファームウェアをビルドしてからマイコンへ書き込みます。
 
 ## シリアル確認
 
@@ -103,8 +120,6 @@ minicom -D /dev/ttyACM0 -b 115200
 
 ## 今後の予定
 
-- `uart01_irq`: USART2 の割り込み受信によるエコーバック
-- DMA を使用した UART 送受信
+- `uart02_dma`: DMAを使用したUART送受信
 - GPIO、タイマー、ADC など、NUCLEO-F401RE の周辺機能サンプル
 - 各方式の動作や実装上の違いを比較できる説明の追加
-
