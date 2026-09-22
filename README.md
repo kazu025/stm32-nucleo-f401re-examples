@@ -4,7 +4,7 @@ STM32 NUCLEO-F401RE を使った学習用サンプル集です。
 
 各サンプルは STM32CubeMX で初期設定とコード生成を行い、CMake / Ninja / Arm GNU Toolchain でビルドします。書き込みには OpenOCD、シリアル通信の確認には minicom を使用します。
 
-現在は、USART2のポーリング受信と割り込み受信を比較できる2つのエコーバックサンプルを収録しています。
+現在は、USART2のポーリング受信、割り込み受信、DMA + IDLE受信を比較できる3つのエコーバックサンプルを収録しています。
 
 ## 開発環境
 
@@ -42,14 +42,24 @@ minicom --version
 │   ├── uart00_polling.ioc
 │   ├── build.sh
 │   └── flash.sh
-└── uart01_irq/                       # USART2割り込み受信
+├── uart01_irq/                       # USART2割り込み受信
+│   ├── README.md
+│   ├── Core/
+│   ├── Drivers/
+│   ├── cmake/
+│   ├── CMakeLists.txt
+│   ├── CMakePresets.json
+│   ├── uart01_irq.ioc
+│   ├── build.sh
+│   └── flash.sh
+└── uart03_dma_idle/                  # USART2 DMA + IDLE受信
     ├── README.md
     ├── Core/
     ├── Drivers/
     ├── cmake/
     ├── CMakeLists.txt
     ├── CMakePresets.json
-    ├── uart01_irq.ioc
+    ├── uart03_dma_idle.ioc
     ├── build.sh
     └── flash.sh
 ```
@@ -69,6 +79,12 @@ PC から受信したデータを STM32 がポーリングで読み取り、同�
 USART2で1バイト受信すると割り込みが発生し、受信完了コールバックで同じ1バイトを返します。受信待ちの間もメインループは動作し、オンボードLED（LD2）が点滅します。
 
 詳しい割り込みの流れは[`uart01_irq/README.md`](uart01_irq/README.md)を参照してください。
+
+## uart03_dma_idle
+
+USART2の受信データをDMAで64バイトのバッファへ転送し、IDLE状態またはバッファ満杯を検出すると、受信した可変長データをまとめて返します。1バイトごとにCPUが処理する割り込み版との違いを確認できます。
+
+詳しいDMAとIDLE検出の流れは[`uart03_dma_idle/README.md`](uart03_dma_idle/README.md)を参照してください。
 
 ## ビルド
 
@@ -120,6 +136,7 @@ minicom -D /dev/ttyACM0 -b 115200
 
 ## 今後の予定
 
-- `uart02_dma`: DMAを使用したUART送受信
+- `uart02_dma`: 固定長DMA受信との比較用サンプル
+- UART送信側のDMA化、リングバッファを使った連続受信
 - GPIO、タイマー、ADC など、NUCLEO-F401RE の周辺機能サンプル
 - 各方式の動作や実装上の違いを比較できる説明の追加
