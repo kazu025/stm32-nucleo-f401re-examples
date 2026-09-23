@@ -304,14 +304,16 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     rx_ready = 1U;
   }
 }
-
+/*
+ * 送信完了コールバック
+ */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART2)
   {
-    tx_busy = 0U;
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    UART_StartReceiveToIdleDMA();
+    tx_busy = 0U; // 送信中解除
+    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin); // 送信完了をLEDを点滅させて通知する
+    UART_StartReceiveToIdleDMA(); // 次の受信DMAを開始する
   }
 }
 

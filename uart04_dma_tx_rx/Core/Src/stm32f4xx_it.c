@@ -216,6 +216,7 @@ void DMA1_Stream5_IRQHandler(void)
 
 /**
   * @brief This function handles DMA1 stream6 global interrupt.
+  * 送信DMAがバッファを読み終えると、DMA1_Stream6の割り込みが発生し、HAL_DMA_IRQHandler()が呼ばれる。
   */
 void DMA1_Stream6_IRQHandler(void)
 {
