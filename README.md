@@ -4,7 +4,7 @@ STM32 NUCLEO-F401RE を使った学習用サンプル集です。
 
 各サンプルは STM32CubeMX で初期設定とコード生成を行い、CMake / Ninja / Arm GNU Toolchain でビルドします。書き込みには OpenOCD、シリアル通信の確認には minicom を使用します。
 
-現在は、USART2のポーリング受信、割り込み受信、RX DMA + IDLE受信、RX/TX DMA、ダブルバッファ方式を比較できる5つのエコーバックサンプルを収録しています。
+現在は、USART2のポーリング受信、割り込み受信、RX DMA + IDLE受信、RX/TX DMA、ダブルバッファ方式、リングバッファ方式を比較できる6つのエコーバックサンプルを収録しています。
 
 ## 開発環境
 
@@ -72,14 +72,24 @@ minicom --version
 │   ├── uart04_dma_tx_rx.ioc
 │   ├── build.sh
 │   └── flash.sh
-└── uart05_dma_double_buffer/         # RX/TX分離バッファ
+├── uart05_dma_double_buffer/         # RX/TX分離バッファ
+│   ├── README.md
+│   ├── Core/
+│   ├── Drivers/
+│   ├── cmake/
+│   ├── CMakeLists.txt
+│   ├── CMakePresets.json
+│   ├── uart05_dma_double_buffer.ioc
+│   ├── build.sh
+│   └── flash.sh
+└── uart06_dma_ring_buffer/           # Circular DMA + リングバッファ
     ├── README.md
     ├── Core/
     ├── Drivers/
     ├── cmake/
     ├── CMakeLists.txt
     ├── CMakePresets.json
-    ├── uart05_dma_double_buffer.ioc
+    ├── uart06_dma_ring_buffer.ioc
     ├── build.sh
     └── flash.sh
 ```
@@ -117,6 +127,12 @@ USART2の受信と送信の両方にDMAを使用します。受信データを`H
 RX用とTX用のバッファを分離し、受信データをTXバッファへコピーした直後に次のRX DMAを開始します。TX DMAの動作中も次のデータを受信できます。
 
 詳しいダブルバッファの流れは[`uart05_dma_double_buffer/README.md`](uart05_dma_double_buffer/README.md)を参照してください。
+
+## uart06_dma_ring_buffer
+
+RX DMAをCircularモードで連続動作させ、新着データをソフトウェアリングバッファへ保存します。mainループはリングバッファからデータを取り出し、TX DMAでエコーバックします。
+
+詳しいCircular DMAとリングバッファの流れは[`uart06_dma_ring_buffer/README.md`](uart06_dma_ring_buffer/README.md)を参照してください。
 
 ## ビルド
 
@@ -169,6 +185,6 @@ minicom -D /dev/ttyACM0 -b 115200
 ## 今後の予定
 
 - `uart02_dma`: 固定長DMA受信との比較用サンプル
-- リングバッファを使った連続受信
+- UART受信エラーとリングバッファオーバーフローからの復旧
 - GPIO、タイマー、ADC など、NUCLEO-F401RE の周辺機能サンプル
 - 各方式の動作や実装上の違いを比較できる説明の追加
