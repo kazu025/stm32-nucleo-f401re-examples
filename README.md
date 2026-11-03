@@ -4,7 +4,7 @@ STM32 NUCLEO-F401RE を使った学習用サンプル集です。
 
 各サンプルは STM32CubeMX で初期設定とコード生成を行い、CMake / Ninja / Arm GNU Toolchain でビルドします。書き込みには OpenOCD、シリアル通信の確認には minicom を使用します。
 
-現在は、USART2のポーリング受信、割り込み受信、RX DMA + IDLE受信、RX/TX DMA、ダブルバッファ方式、リングバッファ方式を比較できる6つのエコーバックサンプルを収録しています。
+現在は、USART2のポーリング受信、割り込み受信、RX DMA + IDLE受信、RX/TX DMA、ダブルバッファ方式、リングバッファ方式、簡単なパケット通信を比較できるサンプルを収録しています。
 
 ## 開発環境
 
@@ -82,14 +82,25 @@ minicom --version
 │   ├── uart05_dma_double_buffer.ioc
 │   ├── build.sh
 │   └── flash.sh
-└── uart06_dma_ring_buffer/           # Circular DMA + リングバッファ
+├── uart06_dma_ring_buffer/           # Circular DMA + リングバッファ
+│   ├── README.md
+│   ├── Core/
+│   ├── Drivers/
+│   ├── cmake/
+│   ├── CMakeLists.txt
+│   ├── CMakePresets.json
+│   ├── uart06_dma_ring_buffer.ioc
+│   ├── build.sh
+│   └── flash.sh
+└── uart07_packet_protocol/           # リングバッファ + パケット解析
     ├── README.md
     ├── Core/
     ├── Drivers/
+    ├── tools/
     ├── cmake/
     ├── CMakeLists.txt
     ├── CMakePresets.json
-    ├── uart06_dma_ring_buffer.ioc
+    ├── uart07_packet_protocol.ioc
     ├── build.sh
     └── flash.sh
 ```
@@ -133,6 +144,12 @@ RX用とTX用のバッファを分離し、受信データをTXバッファへ�
 RX DMAをCircularモードで連続動作させ、新着データをソフトウェアリングバッファへ保存します。mainループはリングバッファからデータを取り出し、TX DMAでエコーバックします。
 
 詳しいCircular DMAとリングバッファの流れは[`uart06_dma_ring_buffer/README.md`](uart06_dma_ring_buffer/README.md)を参照してください。
+
+## uart07_packet_protocol
+
+`uart06_dma_ring_buffer`の上に、`STX / LEN / SEQ / TYPE / PAYLOAD / CRC16`形式の簡単なパケット解析を追加します。CRCが正しいパケットだけを受け付け、payloadをTX DMAで返します。
+
+詳しいパケット解析の流れは[`uart07_packet_protocol/README.md`](uart07_packet_protocol/README.md)を参照してください。
 
 ## ビルド
 
@@ -185,6 +202,7 @@ minicom -D /dev/ttyACM0 -b 115200
 ## 今後の予定
 
 - `uart02_dma`: 固定長DMA受信との比較用サンプル
+- ACK / NAK、タイムアウト、再送制御を持つUART通信プロトコル
 - UART受信エラーとリングバッファオーバーフローからの復旧
 - GPIO、タイマー、ADC など、NUCLEO-F401RE の周辺機能サンプル
 - 各方式の動作や実装上の違いを比較できる説明の追加

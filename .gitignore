@@ -41,6 +41,7 @@ rules.ninja
 *.siz
 
 # IDE and editor temporary files
+.venv/
 .vscode/
 .idea/
 .project
@@ -51,6 +52,22 @@ rules.ninja
 *.swp
 *.swo
 *~
+
+# CubeMX optional packages not used by the CMake/GCC examples
+**/Drivers/CMSIS/Core/
+**/Drivers/CMSIS/Core_A/
+**/Drivers/CMSIS/DAP/
+**/Drivers/CMSIS/DSP/
+**/Drivers/CMSIS/Documentation/
+**/Drivers/CMSIS/NN/
+**/Drivers/CMSIS/RTOS/
+**/Drivers/CMSIS/RTOS2/
+**/EWARM/
+
+# Local helper or Python cache files
+**/flash
+__pycache__/
+*.pyc
 
 # OS metadata
 .DS_Store
